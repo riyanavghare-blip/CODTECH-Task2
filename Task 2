@@ -1,0 +1,52 @@
+from sumy.parsers.plaintext import PlaintextParser
+from sumy.nlp.tokenizers import Tokenizer
+from sumy.summarizers.lsa import LsaSummarizer
+
+def summarize_text(text, num_sentences=3):
+    """
+    Summarizes the input text using the LSA summarization algorithm.
+
+    Args:
+        text (str): The input text to be summarized.
+        num_sentences (int): The desired number of sentences in the summary.
+
+    Returns:
+        str: The concise summary of the input text.
+    """
+    parser = PlaintextParser.from_string(text, Tokenizer("english"))
+    summarizer = LsaSummarizer()
+    summary = summarizer(parser.document, num_sentences)
+    return " ".join([str(sentence) for sentence in summary])
+
+if __name__ == "__main__":
+    print("--- Text Summarization Tool ---")
+
+    # Get input text from the user
+    user_input = input("Enter the text you want to summarize (press Enter twice to finish):\n")
+    full_text = []
+    while user_input:
+        full_text.append(user_input)
+        user_input = input()
+    input_text = "\n".join(full_text)
+
+    if not input_text.strip():
+        print("No text entered. Exiting.")
+    else:
+        # Get desired summary length
+        try:
+            num_sentences = int(input("Enter the desired number of sentences for the summary: "))
+            if num_sentences <= 0:
+                print("Number of sentences must be a positive integer. Using default (3).")
+                num_sentences = 3
+        except ValueError:
+            print("Invalid input for number of sentences. Using default (3).")
+            num_sentences = 3
+
+        # Generate and display the summary
+        concise_summary = summarize_text(input_text, num_sentences)
+
+        print("\n--- Original Text ---")
+        print(input_text)
+
+        print("\n--- Concise Summary ---")
+        print(concise_summary)
